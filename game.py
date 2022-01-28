@@ -1,13 +1,11 @@
 import time
-from random import choice, randint
 from sys import exit
 
 import pygame
 from pygame import locals as L
 
 import constants as C
-from objects import Food, FoodController, SpecialFood
-from utils import get_randon_position
+from objects import FoodController, RockController
 
 pygame.init()
 
@@ -27,8 +25,6 @@ eat_sound = pygame.mixer.Sound("./assets/crunch.wav")
 fail_sound = pygame.mixer.Sound("./assets/fail.wav")
 
 # Helpers
-
-
 def game_over(screen):
     fail_sound.play()
     game_over_text = font.render(f"Game Over", True, C.Colors.RED)
@@ -36,26 +32,19 @@ def game_over(screen):
     y_pos = (C.W_HEIGHT / 2) - (game_over_text.get_height() / 2)
     screen.blit(game_over_text, (x_pos, y_pos))
 
-
 # Game
 gaming = True
 points = 0
+rocks_number = 5
 start_time = time.perf_counter()
 x = int(C.W_WIDTH / 2)
 y = int(C.W_HEIGHT / 2)
-
 speed = C.BLOCK
 x_speed = speed
 y_speed = 0
-
 snake = [(x, y)]
-
 food_controller = FoodController()
-
-rocks = [
-    get_randon_position()
-    for i in range(5)
-]
+rock_controller = RockController(rocks_number)
 
 while True:
     clock.tick(C.FPS)
@@ -77,7 +66,7 @@ while True:
             exit()
 
     if not gaming:
-        if pygame.key.get_pressed()[L.K_RETURN]:
+        if (pygame.key.get_pressed()[L.K_RETURN] or pygame.key.get_pressed()[L.K_r]):
             gaming = True
             points = 0
             start_time = time.perf_counter()
@@ -91,20 +80,21 @@ while True:
             snake = [(x, y)]
 
             food_controller.renew()
+            rock_controller.renew(rocks_number)
         else:
             continue
 
     # controls
-    if pygame.key.get_pressed()[L.K_a] and y_speed:
+    if (pygame.key.get_pressed()[L.K_a] or pygame.key.get_pressed()[L.K_LEFT]) and y_speed:
         x_speed = -speed
         y_speed = 0
-    elif pygame.key.get_pressed()[L.K_d] and y_speed:
+    elif (pygame.key.get_pressed()[L.K_d] or pygame.key.get_pressed()[L.K_RIGHT]) and y_speed:
         x_speed = speed
         y_speed = 0
-    elif pygame.key.get_pressed()[L.K_w] and x_speed:
+    elif (pygame.key.get_pressed()[L.K_w] or pygame.key.get_pressed()[L.K_UP]) and x_speed:
         x_speed = 0
         y_speed = -speed
-    elif pygame.key.get_pressed()[L.K_s] and x_speed:
+    elif (pygame.key.get_pressed()[L.K_s] or pygame.key.get_pressed()[L.K_DOWN]) and x_speed:
         x_speed = 0
         y_speed = speed
 
@@ -125,12 +115,8 @@ while True:
     _food = food_controller.food.update(screen)
 
     _rocks = [
-        pygame.draw.rect(
-            screen,
-            C.Colors.RED,
-            (x, y, C.BLOCK, C.BLOCK)
-        )
-        for x, y in rocks
+        _rock.update(screen)
+        for _rock in rock_controller.rocks
     ]
 
     for _rock in _rocks:

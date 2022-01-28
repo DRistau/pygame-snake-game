@@ -9,7 +9,7 @@ def random_color() -> Tuple[int]:
     return (randint(50, 255), randint(50, 255), randint(50, 255))
 
 
-def get_randon_position() -> Tuple[int]:
+def get_random_position() -> Tuple[int]:
     """Returns a random 2D position from the board."""
     x_spots = range(0, W_WIDTH, BLOCK)
     y_spots = range(0, W_HEIGHT, BLOCK)

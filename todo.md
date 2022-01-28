@@ -9,7 +9,7 @@
 
 
 # tasks
-- Refactor rocks from procedural to OO
+- [Done] Refactor rocks from procedural to OO
 - Refactor the snake's head to OO
 - Refactor the colision check for the snake's head against rocks and fruits
 - Create a Snake object that have to: move, eat/growth, and check colision
